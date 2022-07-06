@@ -36,8 +36,11 @@ Additionally, the file condition.py can be used to modify default parameters suc
 Use Modules
 
 The software has three principal modules that group different sub-routines to be performed. Each of them starts by extracting relevant data from the input text files (Gaussian out files, observed spectra txt files, etc.) and then produces a folder that contains a report with the obtained results, along with ASCII data files for post processing.
+
 1.- Spectra scaling: Weighted spectra is calculated using the selected scaling methodology, and similarity values for IR (SIR) and VCD (ESI) are computed.
+
 2.- Conformational analysis: The conformational abundances of each conformer are optimized to produce the best VCD similarity between calculated and observed spectra. Optimization towards the different VCD similarity functions (SE, S-E and ESI) can be selected.
+
 3.- Similarity toolbox: Similarity functions can be computed using previously produced scaled frequencies. Results can be obtained for the weighted spectra or for individual conformations separately.
 
 Output files
