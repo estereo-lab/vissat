@@ -3,6 +3,7 @@
 
 print(" ")
 print("Extracting data from .out files...")
+print(" ")
 
 import re
 import sys
@@ -58,12 +59,13 @@ if sum(n < 0 for n in freq_list)!=0:
     
 
 nIR = len(freq_list)
-print(nIR)
+print('Total number of vibrational modes (all conformations): ',nIR)
+print(" ")
 nconf = len(glob.glob1(parent_dir,ext))
-print(nconf)
-nmodes = int(nIR/nconf)
-print(nconf)
 
+nmodes = int(nIR/nconf)
+print('Number of vibrational modes per conformation: ',nmodes)
+print(" ")
 print(" ")
 print("done")
 print(" ")

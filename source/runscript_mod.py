@@ -1,5 +1,6 @@
 import os
 import time
+from idna import check_initial_combiner
 import numpy as np
 import global_var
 
@@ -44,9 +45,9 @@ global_var.output_path_m = output_path_m
 import extract_mod
 
 np.savetxt(os.path.join(output_path_m,'freeEnergies.txt'),extract_mod.free_energy_list)
-np.savetxt(os.path.join(output_path_m,'freqlist.txt'),extract_mod.freq_list)
-np.savetxt(os.path.join(output_path_m,'Diplist_withoutConfD.txt'),extract_mod.dipstr_list)
-np.savetxt(os.path.join(output_path_m,'Rotlist_withoutConfD.txt'),extract_mod.rotstr_list)
+#np.savetxt(os.path.join(output_path_m,'freqlist.txt'),extract_mod.freq_list)
+#np.savetxt(os.path.join(output_path_m,'Diplist_withoutConfD.txt'),extract_mod.dipstr_list)
+#np.savetxt(os.path.join(output_path_m,'Rotlist_withoutConfD.txt'),extract_mod.rotstr_list)
 
 global_var.lot_func_str_list = extract_mod.lot_func_str_list
 global_var.freeEnergies = extract_mod.free_energy_list
@@ -96,6 +97,9 @@ global_var.Yexpir = expIR_mod.Yexpir
 global_var.xx = expIR_mod.xx
 global_var.N = expIR_mod.N
 
+Exp_IR_Spectra=np.c_[global_var.xx, global_var.Yexpir]
+np.savetxt(os.path.join(output_path_m,'Exp_IR_Spectra.txt'),Exp_IR_Spectra)
+
 # Observed VCD spectrum extraction
 
 import expVCD_mod
@@ -104,9 +108,12 @@ global_var.Yexpvcd = expVCD_mod.Yexpvcd
 global_var.Yexppos = expVCD_mod.Yexppos
 global_var.Yexpneg = expVCD_mod.Yexpneg
 
-np.savetxt(os.path.join(output_path_m,'Yexpvcd.txt'),global_var.Yexpvcd)
-np.savetxt(os.path.join(output_path_m,'Yexppos.txt'),global_var.Yexppos)
-np.savetxt(os.path.join(output_path_m,'Yexpneg.txt'),global_var.Yexpneg)
+#np.savetxt(os.path.join(output_path_m,'Yexpvcd.txt'),global_var.Yexpvcd)
+#np.savetxt(os.path.join(output_path_m,'Yexppos.txt'),global_var.Yexppos)
+#np.savetxt(os.path.join(output_path_m,'Yexpneg.txt'),global_var.Yexpneg)
+
+Exp_VCD_Spectra=np.c_[global_var.xx, global_var.Yexpvcd]
+np.savetxt(os.path.join(output_path_m,'Exp_VCD_Spectra.txt'),Exp_VCD_Spectra)
 
 # IR similarity and scaling 
 
@@ -162,10 +169,18 @@ else:
                 f1 = functions.lor(1, global_var.xx, global_var.freqlistxconfOpt[i,j], global_var.diplistxconfOpt[i,j], conditions.h)/(91.84*np.pi)
                 fn = fn + f1
     
+    ircalcmax = np.amax(fn)
+    #print ("calcmax: ", ircalcmax)
+    irexpmax = np.amax(global_var.Yexpir)
+    #print ("expmax: ", irexpmax)
+    ir_plot_scale_factor=ircalcmax/irexpmax
+    #print ("IR_plot_scale_factor: ",  ir_plot_scale_factor)
+    scaled_Yexpir = global_var.Yexpir*ir_plot_scale_factor
+
     plt.figure(figsize=(12, 6))
     plt.title('IR spectra', fontsize=17)
     plt.plot(global_var.xx, fn, 'r', label='Calculated')
-    plt.plot(global_var.xx, (global_var.Yexpir * 500), 'b', label='Observed')
+    plt.plot(global_var.xx, (scaled_Yexpir), 'b', label='Observed')
     plt.ylabel('Intensity', fontsize=13)
     plt.yticks(fontsize=9)
     plt.xlabel('Wavenumbers (cm-1)', fontsize=13)
@@ -174,7 +189,8 @@ else:
     plt.legend(loc='best')
     plt.savefig(os.path.join(output_path,'IRspectra'), dpi=150, bbox_inches='tight', pad_inches=0)
     plt.close()
-    np.savetxt(os.path.join(output_path_m,'Calc_IR_Inten.txt'),fn)
+    Calc_IR_Spectra=np.c_[global_var.xx, fn]
+    np.savetxt(os.path.join(output_path_m,'Calc_IR_Spectra.txt'),Calc_IR_Spectra)
     
     for i in range(len(global_var.freqlistxconfOpt[:,0])):
         for j in range(len(global_var.freqlistxconfOpt[0,:])):
@@ -184,10 +200,18 @@ else:
                 f1 = functions.lor(1, global_var.xx, global_var.freqlistxconfOpt[i,j], global_var.rotlistxconfOpt[i,j], conditions.h)/(229600*np.pi)
                 fn = fn + f1
     
+    vcdcalcmax = np.amax(fn)
+    #print ("vcdcalcmax: ", vcdcalcmax)
+    vcdexpmax = np.amax(global_var.Yexpvcd)
+    #print ("vcdexpmax: ", vcdexpmax)
+    vcd_plot_scale_factor=vcdcalcmax/vcdexpmax
+    #print ("VCD_plot_scale_factor: ",  vcd_plot_scale_factor)
+    scaled_Yexpvcd = global_var.Yexpvcd*vcd_plot_scale_factor
+
     plt.figure(figsize=(12, 6))
     plt.title('VCD spectra', fontsize=17)
     plt.plot(global_var.xx, fn, 'r', label='Calculated')
-    plt.plot(global_var.xx, (global_var.Yexpvcd * 1100), 'b', label='Observed')
+    plt.plot(global_var.xx, (scaled_Yexpvcd), 'b', label='Observed')
     plt.ylabel('Intensity', fontsize=13)
     plt.yticks(fontsize=9)
     plt.xlabel('Wavenumbers (cm-1)', fontsize=13)
@@ -196,8 +220,8 @@ else:
     plt.legend(loc='best')
     plt.savefig(os.path.join(output_path,'VCDspectra'), dpi=150, bbox_inches='tight', pad_inches=0)
     plt.close()
-    np.savetxt(os.path.join(output_path_m,'Calc_VCD_Inten.txt'),fn)
-    np.savetxt(os.path.join(output_path_m,'SpectraRange.txt'),global_var.xx)
+    Calc_VCD_Spectra=np.c_[global_var.xx, fn]
+    np.savetxt(os.path.join(output_path_m,'Calc_VCD_Spectra.txt'),Calc_VCD_Spectra)
 
 import report
 

@@ -64,13 +64,13 @@ rweights = np.repeat(weights, nmodes)
 diplist = diplist * rweights
 rotlist = rotlist * rweights
 
-np.savetxt(os.path.join(global_var.output_path_m,'Diplist_withConfD.txt'),diplist)
-np.savetxt(os.path.join(global_var.output_path_m,'Rotlist_withConfD.txt'),rotlist)
+#np.savetxt(os.path.join(global_var.output_path_m,'Diplist_withConfD.txt'),diplist)
+#np.savetxt(os.path.join(global_var.output_path_m,'Rotlist_withConfD.txt'),rotlist)
 
 rweights = np.reshape(rweights, (nmodes,nconf))*100
 
-np.savetxt(os.path.join(global_var.output_path_m,'rweights.txt'),rweights)
-np.savetxt(os.path.join(global_var.output_path_m,'weights.txt'),weights)
+#np.savetxt(os.path.join(global_var.output_path_m,'rweights.txt'),rweights)
+np.savetxt(os.path.join(global_var.output_path_m,'Abundances.txt'),weights)
 
 print("done")
 print(" ")
