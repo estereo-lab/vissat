@@ -1,6 +1,5 @@
 import os
 import time
-from idna import check_initial_combiner
 import numpy as np
 import global_var
 
